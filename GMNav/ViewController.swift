@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 class ViewController: UIViewController {
 
@@ -15,6 +16,13 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.addSubview(navigationView)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10.0, execute: {
+            self.navigationView.navigateToCoordinate(location: CLLocationCoordinate2D(latitude:49.945990, longitude: 36.312958))
+        })
     }
     
     override func viewDidLayoutSubviews() {

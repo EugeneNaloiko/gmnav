@@ -11,11 +11,35 @@ import GoogleMaps
 import SnapKit
 
 class UINavigationView: UIView {
-
+    
     var locationManager = CLLocationManager()
     var mapView: GMSMapView!
     var zoomLevel: Float = 15.0
-    let defaultLocation = CLLocation(latitude: 40.670594, longitude: -73.957055)
+    var currentLocation = CLLocation(latitude: 40.670594, longitude: -73.957055)
+    var routePolyline: GMSPolyline!
+    
+    func navigateToCoordinate(location: CLLocationCoordinate2D) {
+        
+        GoogleMapsDirections.direction(fromOriginCoordinate: GoogleMapsService.LocationCoordinate2D(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude), toDestinationCoordinate: GoogleMapsService.LocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) {
+            (response, error) -> Void in
+            // Check Status Code
+            guard response?.status == GoogleMapsDirections.StatusCode.ok else {
+                // Status Code is Not OK
+                debugPrint(response?.errorMessage ?? "ISSUE")
+                return
+            }
+            
+            if let response = response {
+                if let route = response.routes.first {
+                    if let overview = route.overviewPolylinePoints {
+                        self.drawPolyline(overview)
+                    }
+                }
+            }
+            
+            debugPrint("it has \(response?.routes.count ?? 0) routes")
+        }
+    }
     
     convenience init() {
         self.init(frame: CGRect.zero)
@@ -37,8 +61,8 @@ class UINavigationView: UIView {
     }
     
     private func initializeMapView() {
-        let camera = GMSCameraPosition.camera(withLatitude: defaultLocation.coordinate.latitude,
-                                              longitude: defaultLocation.coordinate.longitude,
+        let camera = GMSCameraPosition.camera(withLatitude: currentLocation.coordinate.latitude,
+                                              longitude: currentLocation.coordinate.longitude,
                                               zoom: zoomLevel)
         mapView = GMSMapView.map(withFrame: self.bounds, camera: camera)
         mapView.settings.myLocationButton = true
@@ -60,18 +84,23 @@ class UINavigationView: UIView {
         locationManager.startUpdatingLocation()
         locationManager.delegate = self
     }
+    
+    func  drawPolyline(_ route : String) {
+        let path: GMSPath = GMSPath(fromEncodedPath: route)!
+        self.routePolyline = GMSPolyline(path: path)
+        routePolyline.strokeWidth = 5.0
+        routePolyline.geodesic = true
+        routePolyline.strokeColor = UIColor.blue
+        self.routePolyline.map = self.mapView
+    }
 }
 
 extension UINavigationView : CLLocationManagerDelegate {
-    // Handle incoming location events.
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let location: CLLocation = locations.last!
-        print("Location: \(location)")
-        
-        let camera = GMSCameraPosition.camera(withLatitude: location.coordinate.latitude,
-                                              longitude: location.coordinate.longitude,
+        self.currentLocation = locations.last!
+        let camera = GMSCameraPosition.camera(withLatitude: self.currentLocation.coordinate.latitude,
+                                              longitude: self.currentLocation.coordinate.longitude,
                                               zoom: zoomLevel)
-        
         if mapView.isHidden {
             mapView.isHidden = false
             mapView.camera = camera

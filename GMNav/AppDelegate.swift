@@ -10,6 +10,7 @@ import UIKit
 import GoogleMaps
 import GooglePlaces
 
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -18,7 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         GMSPlacesClient.provideAPIKey("AIzaSyADhltWW-YsSgHb49Pkr5NAGHcUoljSS5Q")
         GMSServices.provideAPIKey("AIzaSyCwmXPGqqKfL-5yghA3vz9Fc2nNZ5oy48M")
-        
+        GoogleMapsDirections.provide(apiKey: "AIzaSyB46p2BHqzDapczJoJkK93mFNVmpTZzWMA")
+
         window = UIWindow(frame: UIScreen.main.bounds)
         if let window = window {
             window.rootViewController = ViewController()
