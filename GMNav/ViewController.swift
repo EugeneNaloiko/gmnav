@@ -20,8 +20,9 @@ class ViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10.0, execute: {
-            self.navigationView.navigateToCoordinate(location: CLLocationCoordinate2D(latitude:49.945990, longitude: 36.312958))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0, execute: {
+            self.navigationView.navigateToCoordinate(location: CLLocationCoordinate2D(latitude:37.564754, longitude: -122.329660)) //Simulator
+            //self.navigationView.navigateToCoordinate(location: CLLocationCoordinate2D(latitude:49.945990, longitude: 36.312958)) //Kharkiv
         })
     }
     
