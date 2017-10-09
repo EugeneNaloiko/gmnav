@@ -21,13 +21,15 @@ class UINavigationView: UIView {
     let speechSynthesizer = AVSpeechSynthesizer() //Voice
     var locationManager = CLLocationManager()
     var zoomLevel: Float = 15.0
-    var currentLocation = CLLocation(latitude: 40.670594, longitude: -73.957055)
+    var currentLocation = CLLocation(latitude: 37.344647, longitude: -122.046093)
     var toCoordinateLocation: CLLocationCoordinate2D?
     
     var timer = Timer()
     
     var routePolyline: GMSPolyline! //Blue line
     var currentRoute: GoogleMapsDirections.Response.Route?
+    
+    var waypoints: [GoogleMapsService.Place]?
     
     func navigateToCoordinate(location: CLLocationCoordinate2D) {
         self.currentRoute = nil
@@ -116,12 +118,16 @@ class UINavigationView: UIView {
         routePolyline.strokeWidth = 5.0
         routePolyline.geodesic = true
         routePolyline.strokeColor = UIColor.blue
+        let waypoint1: GoogleMapsService.Place = .coordinate(coordinate: GoogleMapsService.LocationCoordinate2D(latitude: 37.57, longitude: -122.329660))
+        let waypoint2: GoogleMapsService.Place = .coordinate(coordinate: GoogleMapsService.LocationCoordinate2D(latitude: 37.59, longitude: -122.329660))
+        let waypoint3: GoogleMapsService.Place = .coordinate(coordinate: GoogleMapsService.LocationCoordinate2D(latitude: 37.398895, longitude: -122.135147))
+        waypoints = [waypoint1, waypoint2, waypoint3]
         self.routePolyline.map = self.mapView
     }
     
     func requestDirections() {
         if let location = self.toCoordinateLocation {
-            GoogleMapsDirections.direction(fromOriginCoordinate: GoogleMapsService.LocationCoordinate2D(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude), toDestinationCoordinate: GoogleMapsService.LocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)) { [unowned self]
+            GoogleMapsDirections.direction(fromOriginCoordinate: GoogleMapsService.LocationCoordinate2D(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude), toDestinationCoordinate: GoogleMapsService.LocationCoordinate2D(latitude: location.latitude, longitude: location.longitude), wayPoints: waypoints) { [unowned self]
                 (response, error) -> Void in
                 // Check Status Code
                 guard response?.status == GoogleMapsDirections.StatusCode.ok else {

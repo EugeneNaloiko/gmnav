@@ -6,7 +6,7 @@ target 'GMNav' do
     # Pods for GMNav
     pod 'GooglePlaces' #2.4.0
     pod 'GoogleMaps' #2.4.0
-    pod 'SnapKit' #3.2.0
+    pod 'SnapKit', '3.2.0' #3.2.0
     pod 'Alamofire' #4.5.0
     pod 'ObjectMapper' #2.2.8
 end
