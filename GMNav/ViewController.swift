@@ -22,7 +22,12 @@ class ViewController: UIViewController {
         super.viewDidAppear(animated)
         DispatchQueue.main.asyncAfter(deadline: .now() + 4.0, execute: {
             self.navigationView.navigateToCoordinate(location: CLLocationCoordinate2D(latitude:37.564754, longitude: -122.329660)) //Simulator
-            //self.navigationView.navigateToCoordinate(location: CLLocationCoordinate2D(latitude:49.945990, longitude: 36.312958)) //Kharkiv
+//self.navigationView.navigateToCoordinate(location: CLLocationCoordinate2D(latitude:49.945990, longitude: 36.312958)) //Kharkiv
+            
+//            self.navigationView.navigateToDestinationPoints(
+//                firstDestinationPoint: CLLocationCoordinate2D(latitude: *first_latitude*, longitude: *first_longitude*),
+//                                                     secondDestinationPoint: CLLocationCoordinate2D(latitude: *another_latitude*, longitude: *another_longitude*)
+//            )
         })
     }
     

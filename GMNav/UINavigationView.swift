@@ -18,7 +18,7 @@ class UINavigationView: UIView {
     var durationLbl = UILabel()
     
     //Models
-    let speechSynthesizer = AVSpeechSynthesizer()
+    let speechSynthesizer = AVSpeechSynthesizer() //Voice
     var locationManager = CLLocationManager()
     var zoomLevel: Float = 15.0
     var currentLocation = CLLocation(latitude: 40.670594, longitude: -73.957055)
@@ -26,7 +26,7 @@ class UINavigationView: UIView {
     
     var timer = Timer()
     
-    var routePolyline: GMSPolyline!
+    var routePolyline: GMSPolyline! //Blue line
     var currentRoute: GoogleMapsDirections.Response.Route?
     
     func navigateToCoordinate(location: CLLocationCoordinate2D) {
