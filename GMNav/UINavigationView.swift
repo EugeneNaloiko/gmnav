@@ -23,6 +23,7 @@ class UINavigationView: UIView {
     var zoomLevel: Float = 15.0
     var currentLocation = CLLocation(latitude: 37.344647, longitude: -122.046093)
     var toCoordinateLocation: CLLocationCoordinate2D?
+    var path = GMSMutablePath()
     
     var timer = Timer()
     
@@ -31,9 +32,10 @@ class UINavigationView: UIView {
     
     var waypoints: [GoogleMapsService.Place]?
     
-    func navigateToCoordinate(location: CLLocationCoordinate2D) {
+    func navigateToCoordinate(location: CLLocationCoordinate2D, throughWaypoints: [GoogleMapsService.Place]? = nil) {
         self.currentRoute = nil
         self.toCoordinateLocation = location
+        self.waypoints = throughWaypoints
         self.requestDirections()
         
         timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: {[weak self]   (timer) in
@@ -111,17 +113,13 @@ class UINavigationView: UIView {
         }
     }
     
-    func  drawPolyline(_ route : String) {
+    func drawPolyline() {
         self.routePolyline?.map = nil
-        let path: GMSPath = GMSPath(fromEncodedPath: route)!
+        self.path.replaceCoordinate(at: 0, with: CLLocationCoordinate2DMake(currentLocation.coordinate.latitude, currentLocation.coordinate.longitude))
         self.routePolyline = GMSPolyline(path: path)
         routePolyline.strokeWidth = 5.0
         routePolyline.geodesic = true
         routePolyline.strokeColor = UIColor.blue
-        let waypoint1: GoogleMapsService.Place = .coordinate(coordinate: GoogleMapsService.LocationCoordinate2D(latitude: 37.57, longitude: -122.329660))
-        let waypoint2: GoogleMapsService.Place = .coordinate(coordinate: GoogleMapsService.LocationCoordinate2D(latitude: 37.59, longitude: -122.329660))
-        let waypoint3: GoogleMapsService.Place = .coordinate(coordinate: GoogleMapsService.LocationCoordinate2D(latitude: 37.398895, longitude: -122.135147))
-        waypoints = [waypoint1, waypoint2, waypoint3]
         self.routePolyline.map = self.mapView
     }
     
@@ -140,7 +138,8 @@ class UINavigationView: UIView {
                     if let route = response.routes.first {
                         self.currentRoute = route
                         if let overview = route.overviewPolylinePoints {
-                            self.drawPolyline(overview)
+                            self.path = GMSMutablePath(fromEncodedPath: overview)!
+                            self.drawPolyline()
                         }
                         if let step = route.legs.first?.steps.first {
                             if let instructionData = step.htmlInstructions?.data(using: .utf8) {
@@ -181,6 +180,17 @@ extension UINavigationView : CLLocationManagerDelegate {
         } else {
             mapView.animate(to: camera)
         }
+        
+        drawPolyline()
+    }
+    
+    //Updated the orientation
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        let camera = GMSCameraPosition.camera(withLatitude: self.currentLocation.coordinate.latitude,
+                                              longitude: self.currentLocation.coordinate.longitude,
+                                              zoom: zoomLevel, bearing: newHeading.magneticHeading,
+                                              viewingAngle: 0)
+        mapView.animate(to: camera)
     }
     
     // Handle authorization for the location manager.
